@@ -1,0 +1,86 @@
+{% extends 'sensor/basenext.html' %}
+
+<script>
+{% block jquery %}
+var endpoint = '/sensor/{{ pid }}/api/chart/data/'
+console.log(endpoint);
+var defaultData = [];
+var labels = [];
+$.ajax({
+    method: "GET",
+    url: endpoint,
+    success: function(data){
+        labels = data.labels
+        defaultData = data.default
+        setChart()
+    },
+    error: function(error_data){
+        console.log("error")
+        console.log(error_data)
+
+    }
+})
+
+
+
+function setChart(){
+    var ctx = document.getElementById("myChart");
+    var ctx2 = document.getElementById("myChart2");
+    var myChart = new Chart(ctx2, {
+    type: 'line',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: 'Temperature',
+            data: defaultData,
+            backgroundColor: [
+               
+                'rgba(75, 192, 192, 0.1)',
+                
+            ],
+            borderColor: [
+                
+                'rgba(75, 192, 192, 2)',
+                
+            ],
+            borderWidth: 2
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero:true
+                }
+            }]
+        }
+    }
+});
+
+    
+
+    
+}
+// var ctx = document.getElementById("myChart");
+
+
+
+{% endblock %}
+</script>
+
+{% block content %}
+
+<div class='row'>
+    <div class='col-sm-12' url-endpoint="/sensor/{{ pid }}/api/chart/data">
+        <h1>Temperature</h1>
+        
+        <div class='col-sm-8'>
+            <canvas id="myChart2" width="700" height="500"></canvas>
+        </div>
+
+
+    </div>
+</div>
+
+{% endblock content %}
+

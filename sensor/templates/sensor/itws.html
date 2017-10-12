@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<title>Plant Nursery</title>
+{% load staticfiles %}
+<meta charset="UTF-8">
+<!--<meta http-equiv="refresh" content="60">-->
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<link rel="stylesheet" href="{% static 'sensor/css/h1.css' %}">
+<link rel="stylesheet" href="{% static 'sensor/css/h2.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.3.0/css/font-awesome.min.css">
+<link href="http://fonts.googleapis.com/css?family=Orbitron" rel="stylesheet" type="text/css"/>
+
+    <style>
+        .tabBlock
+        {
+            background-color:#57574f;
+            border:solid 0px #FFA54F;
+            border-radius:5px; -moz-border-radius:5px; -webkit-border-radius:5px;
+            max-width:200px;
+            width:100%;
+            overflow:hidden;
+            display:block;
+        }
+        .clock
+        {
+            vertical-align:middle;
+            font-family:Orbitron;
+            font-size:40px;
+            font-weight:normal;
+            color:#FFF;
+            padding:0 10px;
+        }
+        .clocklg
+        {
+            vertical-align:middle;
+            font-family:Orbitron;
+            font-size:20px;
+            font-weight:normal;
+            color:#FFF;
+        }
+        hr{
+          background-color:#00CD00;
+          color:#000000;
+          height:5px;
+        }
+        #g1,#g2, #g3 {
+          width:400px; height:220px;
+
+          margin: 1em;
+          float:left;
+        }
+
+         #g4 {
+          width:100px; height:80px;
+          display: inline-block;
+          margin: 1em;
+        }
+
+    </style>
+<body onload="digitized();gage();">
+<!-- Side Navigation -->
+<nav class="w3-sidebar w3-bar-block w3-card-2 w3-animate-left w3-center" style="display:none" id="mySidebar">
+  <!--h1 class="w3-xxxlarge w3-text-theme">Side Navigation</h1-->
+  <button class="w3-bar-item w3-button" onclick="w3_close()">Close <i class="fa fa-remove"></i></button>
+  <a href="/sensor/logout_user" class="w3-bar-item w3-button">Logout</a>
+  <a href="#" class="w3-bar-item w3-button">About</a>
+  <a href="#" class="w3-bar-item w3-button">Contact</a>
+</nav>
+
+<!-- Header -->
+<header class="w3-container w3-theme w3-padding" id="myHeader">
+  <i onclick="w3_open()" class="fa fa-bars w3-xlarge w3-button w3-theme"></i>
+  <div style="background-color:#F3F3F3;
+          max-width:220px;width:100%;margin:0 auto;padding:10px;float:right;position:fixed,z-index:2,top:0;">
+
+          <table class="tabBlock" align="center" cellspacing="0" cellpadding="0" border="0">
+              <tr><td class="clock" id="dc"></td>  <!-- THE DIGITAL CLOCK. -->
+                  <td>
+                      <table cellpadding="0" cellspacing="0" border="0">
+
+                          <!-- HOUR IN 'AM' AND 'PM'. -->
+                          <tr><td class="clocklg" id="dc_hour"></td></tr>
+
+                          <!-- SHOWING SECONDS. -->
+                          <tr><td class="clocklg" id="dc_second"></td></tr>
+                      </table>
+                  </td>
+              </tr>
+          </table>
+      </div>
+    <br>
+    <br>
+
+  <hr>
+  <div class="w3-center">
+
+
+
+  <h1 class="w3-xxxlarge w3-animate-bottom">A Web GIS based IoT solution to grow Plants <br>
+	Welcome {{ username }}</h1>
+    <div class="w3-padding-32">
+      <button class="w3-btn w3-xlarge w3-dark-grey w3-hover-light-grey" onclick="document.getElementById('id01').style.display='block'" style="font-weight:900;">
+        Your Plants</button>
+    </div>
+  </div>
+</header>
+
+<!-- Modal -->
+<div id="id01" class="w3-modal">
+    <div class="w3-modal-content w3-card-4 w3-animate-top">
+      <header class="w3-container w3-theme-l1">
+        <span onclick="document.getElementById('id01').style.display='none'"
+        class="w3-button w3-display-topright">×</span>
+        <center><h3>Plants</h3></center>
+      </header>
+      <div class="w3-padding">
+        <ul>
+	{% for plant in plants %}
+        <li> <a class="w3-btn" href="/sensor/{{ plant.id }}" >{{ plant }}</a>
+	{% if plant.life == 1 %}
+	<button style="background-color:#1ced46;padding:7px 30px;"></button>
+	<img src="{% static 'sensor/pictures/live.jpg'%}" width=25px height=30px>
+	{% else %}
+	<button style="background-color:#c10310;padding:7px 30px;"></button>
+	<img src="{% static 'sensor/pictures/dead.jpg'%}" width=75px height=50px>
+	{% endif %}
+	</li>
+        {% endfor %}
+      </ul>
+      </div>
+      <footer class="w3-container w3-theme-l1">
+        
+      </footer>
+    </div>
+</div>
+<!--progressbar-->
+<div style="height:70px;width:auto;background-color:#308014;font-family:Courier">
+<center><strong><font size='7' color="white">Local Weather</font></strong></center></div>
+<div style="background-image:url({% static 'sensor/pictures/brick.png' %});">
+<center><iframe src="https://weatherfor.us/widget?location=tada,+andhra+pradesh&unit=metric" scrolling="no" frameborder="0" allowtransparency="true" style="background: transparent; width: 720px; height: 330px; overflow:hidden;">
+</iframe></center>
+</div>
+<iframe src="https://www.google.com/maps/d/embed?mid=17XExa6jPjAv5YSIGnNYxUH12Obs" width="100%" height="480"></iframe>
+<!--<div id="map" style="width:auto;height:400px">-->
+
+</div>
+
+<!-- Footer -->
+<footer class="w3-container w3-theme-dark w3-padding-16">
+  
+  <p>Developed By: Kaustubh Pandey, Prashant Kumar Mahanta,Wasim Ishaq Khan, Vishal Prasad, Shubham Gupta,Ashish Patel</p>
+  <div style="position:relative;bottom:55px;" class="w3-tooltip w3-right">
+    <span class="w3-text w3-theme-light w3-padding">Go To Top</span> 
+    <a class="w3-text-white" href="#myHeader"><span class="w3-xlarge">
+    <i class="fa fa-chevron-circle-up"></i></span></a>
+  </div>
+  
+</footer>
+
+<!-- Script for Sidebar, Tabs, Accordions, Progress bars and slideshows -->
+<script>
+//clock
+function digitized() {
+        var dt = new Date();    // DATE() CONSTRUCTOR FOR CURRENT SYSTEM DATE AND TIME.
+        var hrs = dt.getHours();
+        var min = dt.getMinutes();
+        var sec = dt.getSeconds();
+
+        min = Ticking(min);
+        sec = Ticking(sec);
+
+        document.getElementById('dc').innerHTML = hrs + ":" + min;
+        document.getElementById('dc_second').innerHTML = sec;
+
+        if (hrs > 12) {
+            document.getElementById('dc_hour').innerHTML = 'PM';
+        }
+        else {
+            document.getElementById('dc_hour').innerHTML = 'AM';
+        }
+
+        // CALL THE FUNCTION EVERY 1 SECOND (RECURSION).
+        var time
+        time = setInterval('digitized()', 1000);
+    }
+
+    function Ticking(ticVal) {
+        if (ticVal < 10) {
+            ticVal = "0" + ticVal;
+        }
+        return ticVal;
+    }
+//Google Maps
+function myMap() {
+    var mapOptions = {
+        center: new google.maps.LatLng(13.5548, 80.0273),
+        zoom: 100,
+        mapTypeId: google.maps.MapTypeId.HYBRID
+    }
+var map = new google.maps.Map(document.getElementById("map"), mapOptions);
+}
+// Side navigation
+function w3_open() {
+    var x = document.getElementById("mySidebar");
+    x.style.width = "100%";
+    x.style.fontSize = "40px";
+    x.style.paddingTop = "10%";
+    x.style.display = "block";
+}
+function w3_close() {
+    document.getElementById("mySidebar").style.display = "none";
+}
+
+// Tabs
+function openCity(evt, cityName) {
+  var i;
+  var x = document.getElementsByClassName("city");
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";
+  }
+  var activebtn = document.getElementsByClassName("testbtn");
+  for (i = 0; i < x.length; i++) {
+      activebtn[i].className = activebtn[i].className.replace(" w3-dark-grey", "");
+  }
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " w3-dark-grey";
+}
+
+var mybtn = document.getElementsByClassName("testbtn")[0];
+mybtn.click();
+
+// Accordions
+function myAccFunc(id) {
+    var x = document.getElementById(id);
+    if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+    } else {
+        x.className = x.className.replace(" w3-show", "");
+    }
+}
+
+// Slideshows
+var slideIndex = 1;
+
+function plusDivs(n) {
+slideIndex = slideIndex + n;
+showDivs(slideIndex);
+}
+
+function showDivs(n) {
+  var x = document.getElementsByClassName("mySlides");
+  if (n > x.length) {slideIndex = 1}
+  if (n < 1) {slideIndex = x.length} ;
+  for (i = 0; i < x.length; i++) {
+     x[i].style.display = "none";
+  }
+  x[slideIndex-1].style.display = "block";
+}
+
+showDivs(1);
+
+// Progress Bars
+function move() {
+  var elem = document.getElementById("myBar");
+  var width = 5;
+  var id = setInterval(frame, 10);
+  function frame() {
+    if (width == 100) {
+      clearInterval(id);
+    } else {
+      width++;
+      elem.style.width = width + '%';
+      elem.innerHTML = width * 1  + '%';
+    }
+  }
+}
+</script>
+
+<!--<script src="{% static 'sensor/js/raphael-2.1.4.min.js' %}"></script>
+<script src="{% static 'sensor/js/justgage.js' %}"></script>
+<script>
+  var g1, g2, g3, g4;
+
+   function gage(){
+
+    var g1 = new JustGage({
+      id: "g1",
+      value: getRandomInt(0, 100),
+      min: 0,
+      max: 100,
+      title: "HUMIDITY",
+      label: "%"
+    });
+
+    var g2 = new JustGage({
+      id: "g2",
+      value: getRandomInt(0, 100),
+      min: 0,
+      max: 100,
+      title: "SOIL MOISTURE",
+      label: "%"
+    });
+
+    var g3 = new JustGage({
+      id: "g3",
+      value: getRandomInt(0, 100),
+      min: 0,
+      max: 100,
+      title: "WIND SPEED",
+      label: "mph"
+    });
+
+    var g4 = new JustGage({
+      id: "g4",
+      value: getRandomInt(0, 100),
+      min: 0,
+      max: 100,
+      title: "Little Pal",
+      label: "oz"
+    });
+
+    setInterval(function() {
+      g1.refresh(getRandomInt(50, 100));
+      g2.refresh(getRandomInt(50, 100));
+      g3.refresh(getRandomInt(0, 50));
+      g4.refresh(getRandomInt(0, 50));
+    }, 2500);
+  };
+</script>-->
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGVBjmmtGBRGHLw9J953ItnYp1DQnPu6g&callback=myMap"></script>
+
+</body>
+</html>

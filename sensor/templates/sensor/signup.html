@@ -1,0 +1,23 @@
+{% extends 'sensor/base.html' %}
+
+{% block content %}
+<div id="signup"> 
+  <h1>Sign up</h1>
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="field-wrap">
+        <label><span class="req">{{ field.label_tag }}</span></label>
+        {{ field }}<br>
+        {% if field.help_text %}
+          <small style="color: grey">{{ field.help_text }}</small>
+        {% endif %}
+        {% for error in field.errors %}
+          <p style="color: red">{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="button button-block"/>Get Started</button>
+  </form>
+</div>
+{% endblock %}

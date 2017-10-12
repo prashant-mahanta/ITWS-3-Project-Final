@@ -1,0 +1,30 @@
+{% extends 'sensor/base.html' %}
+
+{% block content %}
+<div id="login"> 
+  <h1>Welcome Back!</h1>
+  {% if form.errors %}
+    <p style="color: red">Your username and password didn't match. Please try again.</p>
+  {% endif %}
+  <form method="post">
+    {% csrf_token %}
+    <!--<input type="hidden" name="next" value="{{ next }}" />-->
+    {% for field in form %}
+    
+      <div class="field-wrap">
+       <label> {{ field.label_tag }}<span class="req">*</span></label>
+        {{ field }}<br>
+        {% for error in field.errors %}
+          <p style="color: red">{{ error }}</p>
+        {% endfor %}
+        {% if field.help_text %}
+          <p><small style="color: grey">{{ field.help_text }}</small></p>
+        {% endif %}
+      </div>
+      
+    {% endfor %}
+    <button class="button button-block"/>Log In</button>
+    <a href="{% url 'sensor:register' %}">New to My Site? Sign up</a>
+  </form>
+</div>
+{% endblock %}

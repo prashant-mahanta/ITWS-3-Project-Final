@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+	<head>
+		{% load staticfiles %}
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
+		<meta http-equiv="refresh" content="300"> <!-- Refresh every 15 minutes -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+		<title>Sensors Data</title>
+		<meta name="description" content="Fullscreen Pageflip Layout with BookBlock" />
+		<meta name="keywords" content="fullscreen pageflip, booklet, layout, bookblock, jquery plugin, flipboard layout, sidebar menu" />
+		<meta name="author" content="Codrops" />
+		<link rel="shortcut icon" href="../favicon.ico"> 
+		<link rel="stylesheet" type="text/css" href="{% static 'sensor/css/jquery.jscrollpane.custom.css' %}" />
+		<link rel="stylesheet" type="text/css" href="{% static 'sensor/css/bookblock.css' %}" />
+		<link rel="stylesheet" type="text/css" href="{% static 'sensor/css/custom.css' %}" />
+		<script src="{% static 'sensor/js/modernizr.custom.79639.js' %}"></script>
+		
+	<style>
+			* {
+	box-sizing: border-box;
+}
+
+body {
+	background-color: #fee1e1;
+}
+.button {
+    background-color: #4CAF50; /* Green */
+    border: none;
+    color: white;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    cursor: pointer;
+}
+.button1 {
+    background-color: white; 
+    color: black; 
+    border: 2px solid #4CAF50;
+}
+
+.button1:hover {
+    background-color: #4CAF50;
+    color: white;
+}
+
+
+.wrapper {
+	position: absolute;
+	margin: (-342px/2) 0 0 (-655px/2);
+	left: 50%;
+	top: 50%;
+	height: 342px;
+	width: 655px;
+}
+
+.card {
+	background-color:white;
+	background-size: cover;
+	width: 655px;
+	height: 342px;
+	border-radius: 5px;
+	position: absolute;
+	box-shadow: -20px 30px 116px 0 rgba(92, 15, 15, 0.54);
+	overflow: hidden;
+	z-index: 4;
+}
+.card__orangeShine,
+.card__greenShine {
+		position: absolute;
+		background-repeat: no-repeat;
+		background-size: cover;
+	}
+	
+	
+.card__year {
+		font-family: 'Oswald', sans-serif;
+		text-align: center;
+		color:#131b4c;
+		font-size: 110px;
+		line-height: 110px;
+		padding: 55px 0;
+		font-weight: 100;
+		position: relative;
+		z-index: 2;
+	}
+	
+	.glass {
+    margin: 30px auto;
+    height: 300px;
+    width: 300px;
+    position: relative;
+    border-style: none solid solid solid;
+    border-width: 10px;
+    border-color: lightgray;
+    border-radius: 10px;
+}
+
+.water {
+    width: 100%;
+    height: 10%;
+    background-color: skyblue;
+    position: absolute;
+    bottom: 0;
+}
+	
+	
+
+
+
+	</style>
+			
+	</head>
+	<body >
+		<div id="container" class="container">	
+
+			<div class="menu-panel">
+				<h3><a href="/sensor/{{ user}}/home/" >Home</a></h3>
+				<ul id="menu-toc" class="menu-toc">
+					<li class="menu-toc-current"><a href="#item1" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive;">Temperature</a></li>
+					<li><a href="#item2" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive;">Water in Tank</a></li>
+					<li><a href="#item3" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive;">Humidity</a></li>
+					<li><a href="#item4" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive;">Soil Moisture</a></li>
+<li><a href="#item5" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive;">Rainfall</a></li>
+					
+				</ul>
+				
+			</div>
+
+			<div class="bb-custom-wrapper">
+				<div id="bb-bookblock" class="bb-bookblock">
+					<div class="bb-item" id="item1">
+						<div class="content">
+							<div class="scroller">
+								<h2 style="font-family: 'Comic Sans MS', 'Comic Sans', cursive;color:#03092d">Temperature</h2>
+								<div class="wrapper">
+									<pre>
+									
+
+
+
+									</pre>
+									<pre>														</pre><a href="{{ pid }}/temp/" target="_blank"style="text-decoration:none"><button class="button button1">Previous Data</button></a>
+
+
+
+</div>
+										<div class="card">
+											<div class="card__year">
+											<img src="{% static 'sensor/pictures/thermometer.png' %}" height="200px" width="150px">{{ temp }}<sup>o</sup>C
+											</div>
+											<div class="card__cometOuter">
+												<div class="card__comet"></div>
+												<div class="card__comet card__comet--second">
+												</div>
+											</div>
+											<div class="card__circle"></div>
+											<div class="card__smallCircle"></div>
+											<div class="card__orangeShine"></div>
+											<div class="card__greenShine"></div>
+											<div class="card__thankyou">
+												
+											</div>
+											
+										</div>
+									</div>
+									<div>
+									
+
+								
+							</div>
+						</div>
+					</div>
+					<div class="bb-item" id="item2">
+						<div class="content">
+							<div class="scroller">
+								<h2 style="font-family: 'Comic Sans MS', 'Comic Sans', cursive;color:#03092d">Water in Tank</h2>
+								<div>
+									<h3 style="font-family: 'Comic Sans MS', 'Comic Sans', cursive;color:#032d2d" url-endpoint='{% url "sensor:api-data" %}'>{{ depth }}%</h3>{% if depth < 20 %}
+																			<h3 style="font-family: 'Comic Sans MS', 'Comic Sans', cursive;color:#af2c2c;tex-align:centre">Please Fill The Tank</h3>
+																			{%endif%}
+								<div class="glass">
+    								<div class="water"></div>
+								
+								
+								</div>
+								
+								</div>
+
+				
+							</div>
+						</div>
+					</div>
+				
+					<div class="bb-item" id="item3">
+						<div class="content">
+							<div class="scroller">
+								<h2 style="font-family: 'Comic Sans MS', 'Comic Sans', cursive;color:#03092d">Humidity</h2>
+								  <div class="wrapper">
+								  	<div>
+								  	<pre>
+									
+
+
+
+									</pre>
+									<pre>														</pre><a href="{{ pid }}/humid/" target="_blank"style="text-decoration:none"><button class="button button1">Previous Data</button></a></div>
+										<div class="card">
+											<div class="card__year">
+											<img src="{% static 'sensor/pictures/humidity.png' %}" height="200px" width="150px"> {{ humid }} %
+											</div>
+											<div class="card__cometOuter">
+												<div class="card__comet"></div>
+												<div class="card__comet card__comet--second">
+												</div>
+											</div>
+											<div class="card__circle"></div>
+											<div class="card__smallCircle"></div>
+											<div class="card__orangeShine"></div>
+											<div class="card__greenShine"></div>
+											<div class="card__thankyou">
+												
+											</div>
+											
+										</div>
+									</div>
+
+								
+							</div>
+						</div>
+					</div>
+					<div class="bb-item" id="item4">
+						<div class="content">
+							<div class="scroller">
+								<h2 style="font-family: 'Comic Sans MS', 'Comic Sans', cursive;color:#03092d">Soil Moisture</h2>
+								<div class="wrapper">
+									<div>
+									<pre>
+									
+
+
+
+									</pre>
+									<pre>														</pre><a href="{{ pid }}/moist/" target="_blank"style="text-decoration:none"><button class="button button1">Previous Data</button></a></div>
+										<div class="card">
+											<div class="card__year">
+											<img src="{% static 'sensor/pictures/soil.jpeg' %}" height="200px" width="150px">{{moist}}%
+											</div>
+											<div class="card__cometOuter">
+												<div class="card__comet"></div>
+												<div class="card__comet card__comet--second">
+												</div>
+											</div>
+											<div class="card__circle"></div>
+											<div class="card__smallCircle"></div>
+											<div class="card__orangeShine"></div>
+											<div class="card__greenShine"></div>
+											<div class="card__thankyou">
+												
+											</div>
+											
+										</div>
+									</div>
+								
+							</div>
+						</div>
+					</div>
+					
+<div class="bb-item" id="item5">
+						<div class="content">
+							<div class="scroller">
+								<h2 style="font-family: 'Comic Sans MS', 'Comic Sans', cursive;color:#03092d">Rainfall</h2>
+	{% if rain >= 30 %}
+		<h3 style="color:red">Heavy Rain</h3>
+	{% elif rain >= 5 %}
+		<h3 style="color:red">Light Rain </h3>
+	{% else %}
+		<h3 style="color:red">No or very less Rain </h3>
+	{% endif%}
+								<div class="wrapper">
+									
+										<div class="card">
+											<div class="card__year">
+	{% if rain >= 30 %}
+		<img src="{% static 'sensor/pictures/heavyrain.png' %}" height="200px" width="150px">{{ rain }} cm
+		
+	{% elif rain >= 5 %}
+		<img src="{% static 'sensor/pictures/lightrain.png' %}" height="200px" width="150px">{{ rain }} cm
+		
+	{% else %}
+		<img src="{% static 'sensor/pictures/norain.svg' %}" height="200px" width="150px">{{ rain }} cm
+		
+	{% endif%}
+											</div>
+											<div class="card__cometOuter">
+												<div class="card__comet"></div>
+												<div class="card__comet card__comet--second">
+												</div>
+											</div>
+											<div class="card__circle"></div>
+											<div class="card__smallCircle"></div>
+											<div class="card__orangeShine"></div>
+											<div class="card__greenShine"></div>
+											<div class="card__thankyou">
+												
+											</div>
+											
+										</div>
+									</div>
+								
+							</div>
+						</div>
+					</div>
+					
+					
+				
+				<nav>
+					<span id="bb-nav-prev">&larr;</span>
+					<span id="bb-nav-next">&rarr;</span>
+				</nav>
+
+				<span id="tblcontents" class="menu-button">Table of Contents</span>
+
+			</div>
+				
+		</div><!-- /container -->
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+		<script src="{% static 'sensor/js/jquery.mousewheel.js' %}"></script>
+		<script src="{% static 'sensor/js/jquery.jscrollpane.min.js' %}"></script>
+		<script src="{% static 'sensor/js/jquerypp.custom.js' %}"></script>
+		<script src="{% static 'sensor/js/jquery.bookblock.js' %}"></script>
+		<script src="{% static 'sensor/js/page.js'%}"></script>
+		<script>
+			$(function() {
+
+				Page.init();
+
+			});
+</script>
+	<script>
+		const $circle = document.querySelector('.card__circle');
+const $smallCircle = document.querySelector('.card__smallCircle');
+const $year = document.querySelector('.card__year');
+const $card = document.querySelector('.card');
+const $cardOrangeShine = document.querySelector('.card__orangeShine');
+const $cardThankYou = document.querySelector('.card__thankyou');
+const $cardComet = document.querySelector('.card__cometOuter');
+
+const generateTranslate = (el, e, value) => {
+	el.style.transform = `translate(${e.clientX*value}px, ${e.clientY*value}px)`;
+}
+// http://stackoverflow.com/a/1480137
+const cumulativeOffset = (element) => {
+    var top = 0, left = 0;
+    do {
+        top += element.offsetTop  || 0;
+        left += element.offsetLeft || 0;
+        element = element.offsetParent;
+    } while(element);
+
+    return {
+        top: top,
+        left: left
+    };
+};
+document.onmousemove = (event) => {
+	//console.log(cumulativeOffset($card))
+	const e = event || window.event;
+	const x = (e.pageX - cumulativeOffset($card).left - (350 / 2)) * -1 / 100;
+	const y = (e.pageY - cumulativeOffset($card).top - (350 / 2)) * -1 / 100;
+
+	const matrix = [
+		[1, 0, 0, -x * 0.00005],
+		[0, 1, 0, -y * 0.00005],
+		[0, 0, 1, 1],
+		[0, 0, 0, 1]
+	];
+
+	generateTranslate($smallCircle, e, 0.03);
+	generateTranslate($cardThankYou, e, 0.03);
+	generateTranslate($cardOrangeShine, e, 0.09);
+	generateTranslate($circle, e, 0.05);
+	generateTranslate($year, e, 0.03);
+	generateTranslate($cardComet, e, 0.05);
+
+	$card.style.transform = `matrix3d(${matrix.toString()})`;
+}
+</script>
+<script>
+{% block jquery %}
+var endpoint = '/sensor/api/data/'
+
+$.ajax({
+    method: "GET",
+    url: endpoint,
+    success: function(data){
+        depth = data.height
+        console.log(depth)
+        $(function(){
+    $('.water').animate({
+        height: depth*2.9
+    }, 1000)
+})
+    },
+    error: function(error_data){
+        console.log("error")
+        console.log(error_data)
+
+    }
+})
+
+	
+	{% endblock %}
+</script>
+	</body>
+</html>
