@@ -12,6 +12,19 @@
 <link href="http://fonts.googleapis.com/css?family=Orbitron" rel="stylesheet" type="text/css"/>
 
     <style>
+    
+      /* Always set the map height explicitly to define the size of the div
+       * element that contains the map. */
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+    
         .tabBlock
         {
             background-color:#57574f;
@@ -63,9 +76,8 @@
 <nav class="w3-sidebar w3-bar-block w3-card-2 w3-animate-left w3-center" style="display:none" id="mySidebar">
   <!--h1 class="w3-xxxlarge w3-text-theme">Side Navigation</h1-->
   <button class="w3-bar-item w3-button" onclick="w3_close()">Close <i class="fa fa-remove"></i></button>
-  <a href="/sensor/logout_user" class="w3-bar-item w3-button">Logout</a>
-  <a href="#" class="w3-bar-item w3-button">About</a>
-  <a href="#" class="w3-bar-item w3-button">Contact</a>
+  <a href="/sensor/logout_user/" class="w3-bar-item w3-button">Logout</a>
+  <a href="{% url 'sensor:addPlant' %}" class="w3-bar-item w3-button">Add Plant</a>
 </nav>
 
 <!-- Header -->
@@ -138,14 +150,76 @@
 <div style="height:70px;width:auto;background-color:#308014;font-family:Courier">
 <center><strong><font size='7' color="white">Local Weather</font></strong></center></div>
 <div style="background-image:url({% static 'sensor/pictures/brick.png' %});">
-<center><iframe src="https://weatherfor.us/widget?location=tada,+andhra+pradesh&unit=metric" scrolling="no" frameborder="0" allowtransparency="true" style="background: transparent; width: 720px; height: 330px; overflow:hidden;">
-</iframe></center>
+<center>
+<iframe src="https://weatherfor.us/widget?location=tada,+andhra+pradesh&unit=metric" scrolling="no" frameborder="0" allowtransparency="true" style="background: transparent; width: 720px; height: 330px; overflow:hidden;">
+</iframe>
+<main>
+{% block content %}
+{% endblock %}
+</main></center>
 </div>
-<iframe src="https://www.google.com/maps/d/embed?mid=17XExa6jPjAv5YSIGnNYxUH12Obs" width="100%" height="480"></iframe>
+<div id="map"></div>
 <!--<div id="map" style="width:auto;height:400px">-->
 
 </div>
+<script>
 
+      // The following example creates complex markers to indicate beaches near
+      // Sydney, NSW, Australia. Note that the anchor is set to (0,32) to correspond
+      // to the base of the flagpole.
+
+      function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 14,
+          center: {lat: 13.560107, lng: 80.023259}
+        });
+
+        setMarkers(map);
+      }
+
+      // Data for the markers consisting of a name, a LatLng and a zIndex for the
+      // order in which these markers should display on top of each other.
+      var beaches = {{mapdata}};
+      console.log(beaches);
+      function setMarkers(map) {
+        // Adds markers to the map.
+
+        // Marker sizes are expressed as a Size of X,Y where the origin of the image
+        // (0,0) is located in the top left of the image.
+
+        // Origins, anchor positions and coordinates of the marker increase in the X
+        // direction to the right and in the Y direction down.
+        var image = {
+          url: "{% static 'sensor/pictures/plant-icon.png' %}",
+          // This marker is 20 pixels wide by 32 pixels high.
+          size: new google.maps.Size(20, 32),
+          // The origin for this image is (0, 0).
+          origin: new google.maps.Point(0, 0),
+          // The anchor for this image is the base of the flagpole at (0, 32).
+          anchor: new google.maps.Point(0, 32)
+        };
+        // Shapes define the clickable region of the icon. The type defines an HTML
+        // <area> element 'poly' which traces out a polygon as a series of X,Y points.
+        // The final coordinate closes the poly by connecting to the first coordinate.
+        var shape = {
+          coords: [1, 1, 1, 20, 18, 20, 18, 1],
+          type: 'poly'
+        };
+        for (var i = 0; i < beaches.length; i++) {
+          var beach = beaches[i];
+          var marker = new google.maps.Marker({
+            position: {lat: beach[0], lng: beach[1]},
+            map: map,
+            icon: image,
+            shape: shape,
+            title: "Plant",
+            zIndex: beach[2]
+          });
+        }
+      }
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyD8NHcrvrDQVvYYzeNDxVf5UgjKbPrw2VM&callback=initMap">
+    </script>
 <!-- Footer -->
 <footer class="w3-container w3-theme-dark w3-padding-16">
   
@@ -328,7 +402,7 @@ function move() {
     }, 2500);
   };
 </script>-->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBGVBjmmtGBRGHLw9J953ItnYp1DQnPu6g&callback=myMap"></script>
+
 
 </body>
 </html>

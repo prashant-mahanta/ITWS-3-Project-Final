@@ -14,9 +14,10 @@ from django.contrib.auth import authenticate,login,logout
 #from django.views import generic
 #from django.views.generic import View
 from .forms import UserForm
-from .forms import LoginForm
+from .forms import LoginForm,AddPlant
 #--------------------------
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
 from django.views.generic import View
@@ -26,33 +27,60 @@ from rest_framework.response import Response
 import time
 #--------------------------------
 #View to show temperature,humidity,etc. on the webpage
+location = [[13.557447, 80.025309, 4],[13.560107, 80.023259, 3],[13.546794, 79.995885, 2],[13.550997, 80.016087, 1]]
+@login_required(login_url='/sensor/login_user/')
 def index(request,pid):
-    temp = Temperature.objects.filter(pid=pid)
-    humid = Humidity.objects.filter(pid=pid)
-    s=temp[len(temp)-1]
-    w=humid[len(humid)-1]
-    op1=int(s.temperature)
-    op2=int(w.humidity)
-    depth = Depth.objects.all()
-    p=depth[len(depth)-1]
-    op3=int(p.depth)
-    dept = soilMoisture.objects.filter(pid=pid)
-    p=dept[len(dept)-1]
-    op4=int(p.moisture)
-    rain=Rain.objects.all()
-    w=rain[len(rain)-1]
-    op6=int(w.rainfall)
-    plants=Plant.objects.all()
-    for i in plants:
-	if(i.id==int(pid)):
-		uid=i.user.id
-		break
-    plants=Plant.objects.filter(user=uid)
-    pid=str(pid)
-    context = {'temp': op1,'humid':op2, 'depth':op3, 'moist':op4,'pid':pid,'user':uid,'plants':plants,'rain':op6}
-    return render(request, 'sensor/index.html', context)
-#Checks if no. of recordsis greater than 150 and if true deletes 50 oldest records
-def check():
+    users=User.objects.all()
+    plant=Plant.objects.filter(pk=pid)
+    r=0
+    for user in users:
+	if(plant[0].user==user):
+		if(request.user==user):
+			r=1
+    if(r):
+	    temp = Temperature.objects.filter(pid=pid)
+	    humid = Humidity.objects.filter(pid=pid)
+	    if len(temp) > 0:
+		s=temp[len(temp)-1]
+		op1=int(s.temperature)
+	    else:
+		op1 = "NaN"
+	    if len(humid) > 0:
+		w=humid[len(humid)-1]
+		op2=int(w.humidity)
+	    else:
+		op2 = "NaN"
+	    depth = Depth.objects.all()
+	    if len(depth) > 0:
+		p=depth[len(depth)-1]
+		op3=int(p.depth)
+	    else:
+		op3 = "NaN"
+	    dept = soilMoisture.objects.filter(pid=pid)
+	    if len(dept) > 0:
+		p=dept[len(dept)-1]
+		op4=int(p.moisture)
+	    else:
+		op4 = "NaN"
+	    rain=Rain.objects.all()
+	    if len(rain) > 0:
+		w=rain[len(rain)-1]
+		op6=int(w.rainfall)
+	    else:
+		op6 = "NaN"
+	    plants=Plant.objects.all()
+	    for i in plants:
+		if(i.id==int(pid)):
+			uid=i.user.id
+			break
+	    plants=Plant.objects.filter(user=uid)
+	    pid=str(pid)
+	    context = {'temp': op1,'humid':op2, 'depth':op3, 'moist':op4,'pid':pid,'user':uid,'plants':plants,'rain':op6}
+	    return render(request, 'sensor/index.html', context)
+    else:
+	raise Http404("Sorry...You don't have this plant" );   
+#Checks if no. of records is greater than 150 and if true deletes 50 oldest records
+'''def check():
     temp = Temperature.objects.all()
     humid = Humidity.objects.all()
     depth = Depth.objects.all()
@@ -73,6 +101,7 @@ def check():
         for i in range(0,51):
             a=dept[i]
             a.delete()
+'''
 #It acts as a pseudo view which works with pseudo url .../sensor/m?t=''&h=''&...  Helps in storing data in database.
 #
 @csrf_exempt
@@ -85,6 +114,18 @@ def getdata(request):
     rain=request.GET['rain']
     d=time.ctime()
     plant=Plant.objects.filter(id=int(pi))
+    latitude = plant[0].latitude
+    longitude = plant[0].longitude
+    message = 'Plant '+str(pi)
+    flag=0
+    for i in range(0,len(location)):
+        if location[i][3] == int(pi):
+            location[i][0] = message
+            location[i][1] = latitude
+            location[i][2] = longitude
+            flag=1
+    if flag == 0:
+        location.append([message,latitude,longitude,int(pi)])
     f=Temperature(temperature=temp,time=d,pid=plant[0])
     f.save()
     s = Depth(depth=dept,time=d)
@@ -98,8 +139,9 @@ def getdata(request):
     m.save()
     s=Rain(rainfall=rain,time=d)
     s.save()
-    check()
+    #check()
     return HttpResponse(str(temp))
+#Logout view logouts the user and redirects the user to login page.
 def logout_user(request):
     logout(request)
     #form = LoginForm(request.POST or None)
@@ -107,7 +149,7 @@ def logout_user(request):
      #   "form": form,
     #}
     #return render(request, 'sensor/login.html', context)
-    return redirect('/sensor/login_user/')
+    return render(request,'sensor/main_index.html/')
 
 
 #View to allow users to register on our Website.
@@ -126,23 +168,31 @@ def register(request):
 		plants = Plant.objects.filter(user=request.user)
 		for p in plants:
 			d=soilMoisture.objects.filter(pid=p)
-			d=int(d[len(d)-1].moisture)
+			if(len(d)>0):
+				d=int(d[len(d)-1].moisture)
+			else:
+				d=1
 			if(d!=0):
 				d=1
 			p.life=d
 			p.save()
 		plants = Plant.objects.filter(user=request.user)
                 #albums = Album.objects.filter(user=request.user)
-                return render(request, 'sensor/itws.html',{'username':username,'plants':plants})
+                return render(request, 'sensor/itws.html',{'username':username,'plants':plants,'mapdata':location})
     context = {
         "form": form,
     }
     return render(request, 'sensor/signup.html', context)
 #This view allows users to login. It gets called when url ~/sensor/login_user is called
+#Takes username and password from user and authenticates the user.
 def login_user(request):
     form = LoginForm(request.POST or None)
     context = {
         "form": form,
+    }
+    context2={
+    	"form":form,
+    	'error_message':'Invalid Credentials'
     }
     if request.method == "POST":
         username = request.POST['username']
@@ -154,21 +204,61 @@ def login_user(request):
                 plants = Plant.objects.filter(user=request.user)
 		for p in plants:
 			d=soilMoisture.objects.filter(pid=p)
-			d=int(d[len(d)-1].moisture)
+			if(len(d)>0):
+				d=int(d[len(d)-1].moisture)
+			else:
+				d=1
 			if(d!=0):
 				d=1
 			p.life=d
 			p.save()
 		plants = Plant.objects.filter(user=request.user)
                 #return render(request, 'sensor/itws.html', {'albums': albums})
-                return render(request,'sensor/itws.html',{'username':username,'plants':plants})
+                return render(request,'sensor/itws.html',{'username':username,'plants':plants,'mapdata':location})
             else:
                 return render(request, 'sensor/login.html', {'error_message': 'Your account has been disabled'})
         else:
-            return render(request, 'sensor/login.html', {'error_message': 'Invalid login'})
+            return render(request, 'sensor/login.html', context2)
     return render(request, 'sensor/login.html',context)
+
+@login_required(login_url='/sensor/login_user/')
+def addPlant(request):
+    form = AddPlant(request.POST or None)
+    if request.method=="POST":
+        user = request.user
+        plant_type = request.POST['plant_type']
+        plant=Plant(user=user,plant_type=plant_type,life=1)
+	plant.save()
+        plants = Plant.objects.filter(user=user)
+	for p in plants:
+		d=soilMoisture.objects.filter(pid=p)
+		if(len(d)>0):
+			d=int(d[len(d)-1].moisture)
+		else:
+			d=1
+		if(d!=0):
+			d=1
+		p.life=d
+		p.save()
+	plants = Plant.objects.filter(user=user)
+        return render(request,'sensor/itws.html',{'username':user.username,'plants':plants,'mapdata':location}) 
+    plants = Plant.objects.filter(user=request.user)
+    for p in plants:
+	d=soilMoisture.objects.filter(pid=p)
+	if(len(d)>0):
+	     d=int(d[len(d)-1].moisture)
+	else:
+		d=1
+	if(d!=0):
+		d=1
+	p.life=d
+	p.save()
+    plants = Plant.objects.filter(user=request.user)
+    return render(request,'sensor/addplant.html',{"form":form,'username':request.user.username,'plants':plants})
+
 #View to show the first page after login to user.
 def home(request,pid):
+    uid=request.user.id
     plants=Plant.objects.all()
     for i in plants:
 	if(i.id==int(pid)):
@@ -177,7 +267,10 @@ def home(request,pid):
     plants = Plant.objects.filter(user=request.user)
     for p in plants:
 		d=soilMoisture.objects.filter(pid=p)
-		d=int(d[len(d)-1].moisture)
+		if(len(d)>0):
+			d=int(d[len(d)-1].moisture)
+		else:
+			d=1
 		if(d!=0):
 			d=1
 		p.life=d
@@ -185,7 +278,7 @@ def home(request,pid):
     plants = Plant.objects.filter(user=request.user)
     user=User.objects.filter(id=uid)
     username=user[0].username
-    return render(request,'sensor/itws.html',{'username':username,'plants':plants})
+    return render(request,'sensor/itws.html',{'username':username,'plants':plants,'mapdata':location})
 #A view just needed to send the data from database to display in index.html
 def gen(request):
     temp = Temperature.objects.all()
@@ -197,7 +290,8 @@ def gen(request):
     context = {'temp': op1,'humid':op2}
     return render(request, 'sensor/index.html', context)
 
-#-----------------Today ------------------------------
+#-----------------------------------------------------
+#For showing charts and graphs of humidity,temperature,moisture etc over past few days.
 class HomeView(View):
     def get(self, request, pid):
         

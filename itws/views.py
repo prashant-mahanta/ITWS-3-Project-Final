@@ -9,4 +9,6 @@ from django.http import Http404
 
 def index(request):
     #return render(request, 'sensor/itws.html')
-    return render(request,'sensor/base.html')
+    return render(request,'sensor/main_index.html')
+def loginpage(request):
+	return render(request,'sensor/base.html')
