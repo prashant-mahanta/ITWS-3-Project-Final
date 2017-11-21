@@ -1,0 +1,19 @@
+{% extends 'sensor/itws.html' %}
+
+{% block content %}
+{% load staticfiles %}
+<div class="w3-card">
+  <img src="{% static 'sensor/pictures/myplant.jpg' %}" alt="Plant" style="width:30%;height:330px">
+  <div class="w3-container">
+  <form method="post">
+{% csrf_token %}
+{% for field in form %}
+<label>{{ field.label_tag }}</label>
+{{ field }}
+{% endfor %}<br>
+<button class="w3-button" type="submit" style="background-color:#42aaf4">CHANGE LOCATION</button>
+</form>
+  </div>
+</div>
+
+{% endblock %}

@@ -15,6 +15,18 @@ class LoginForm(forms.ModelForm):
 		fields=['username','password']
 class AddPlant(forms.ModelForm):
 	plant_type=forms.CharField(label='Plant type')
+	latitude=forms.FloatField(label='Latitude')
+	longitude=forms.FloatField(label='Longitude')
+
 	class Meta:
 		model=Plant
 		fields=['plant_type']
+
+class ModPlant(forms.ModelForm):
+	pid=forms.CharField(label='Plant id')
+	latitude=forms.FloatField(label='Latitude')
+	longitude=forms.FloatField(label='Longitude')
+
+	class Meta:
+		model=Plant
+		fields=['pid','latitude','longitude']

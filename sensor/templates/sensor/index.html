@@ -120,7 +120,7 @@ body {
 		<div id="container" class="container">	
 
 			<div class="menu-panel">
-				<h3><a href="/sensor/{{ user}}/home/" >Home</a></h3>
+				<h3><a href="/sensor/{{ pid}}/home/" >Home</a></h3>
 				<ul id="menu-toc" class="menu-toc">
 					<li class="menu-toc-current"><a href="#item1" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive;">Temperature</a></li>
 					<li><a href="#item2" style="font-family: 'Comic Sans MS', 'Comic Sans', cursive;">Water in Tank</a></li>
@@ -287,13 +287,13 @@ body {
 										<div class="card">
 											<div class="card__year">
 	{% if rain >= 30 %}
-		<img src="{% static 'sensor/pictures/heavyrain.png' %}" height="200px" width="150px">{{ rain }} cm
+		<img src="{% static 'sensor/pictures/heavyrain.png' %}" height="200px" width="150px">{{ rain }} mm
 		
 	{% elif rain >= 5 %}
-		<img src="{% static 'sensor/pictures/lightrain.png' %}" height="200px" width="150px">{{ rain }} cm
+		<img src="{% static 'sensor/pictures/lightrain.png' %}" height="200px" width="150px">{{ rain }} mm
 		
 	{% else %}
-		<img src="{% static 'sensor/pictures/norain.svg' %}" height="200px" width="150px">{{ rain }} cm
+		<img src="{% static 'sensor/pictures/norain.svg' %}" height="200px" width="150px">{{ rain }} mm
 		
 	{% endif%}
 											</div>

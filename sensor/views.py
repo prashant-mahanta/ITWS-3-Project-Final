@@ -15,6 +15,7 @@ from django.contrib.auth import authenticate,login,logout
 #from django.views.generic import View
 from .forms import UserForm
 from .forms import LoginForm,AddPlant
+from .forms import *
 #--------------------------
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -27,7 +28,8 @@ from rest_framework.response import Response
 import time
 #--------------------------------
 #View to show temperature,humidity,etc. on the webpage
-location = [[13.557447, 80.025309, 4],[13.560107, 80.023259, 3],[13.546794, 79.995885, 2],[13.550997, 80.016087, 1]]
+#location = [latitude longitude pid message ]
+location = []
 @login_required(login_url='/sensor/login_user/')
 def index(request,pid):
     users=User.objects.all()
@@ -151,7 +153,33 @@ def logout_user(request):
     #return render(request, 'sensor/login.html', context)
     return render(request,'sensor/main_index.html/')
 
-
+def plant_location(plants,locate):
+	#a=[]
+	for p in plants:
+		a=[]
+		a.append(p.latitude)
+		a.append(p.longitude)
+		a.append(p.id)
+		moist = soilMoisture.objects.filter(pid=p.id)
+		if len(moist)>0:
+			mo = moist[len(moist)-1]
+		else:
+			mo = "NaN"
+		humid = Humidity.objects.filter(pid=p.id)
+		if len(humid)>0:
+			h = humid[len(humid)-1]
+		else:
+			h = "NaN"
+		temp = Temperature.objects.filter(pid=p.id)
+		if len(temp)>0:
+			t = temp[len(temp)-1]
+		else:
+			t = "NaN"
+		s=p.plant_type
+		a.append(str("Plant "+str(p.id)+" "+str(s)+"\n"+"Moisture: "+str(mo)+" %\n"+"Temperature: "+str(t)+" C\nHumidity: "+str(h)+" %"))
+		locate.append(a)
+	print(locate)
+	return locate
 #View to allow users to register on our Website.
 def register(request):
     form = UserForm(request.POST or None)
@@ -178,7 +206,9 @@ def register(request):
 			p.save()
 		plants = Plant.objects.filter(user=request.user)
                 #albums = Album.objects.filter(user=request.user)
-                return render(request, 'sensor/itws.html',{'username':username,'plants':plants,'mapdata':location})
+                locate=[]
+                locate=plant_location(plants,locate)
+                return render(request, 'sensor/itws.html',{'username':username,'plants':plants,'mapdata':locate})
     context = {
         "form": form,
     }
@@ -214,7 +244,9 @@ def login_user(request):
 			p.save()
 		plants = Plant.objects.filter(user=request.user)
                 #return render(request, 'sensor/itws.html', {'albums': albums})
-                return render(request,'sensor/itws.html',{'username':username,'plants':plants,'mapdata':location})
+                locate=[]
+                locate=plant_location(plants,locate)
+                return render(request,'sensor/itws.html',{'username':username,'plants':plants,'mapdata':locate})
             else:
                 return render(request, 'sensor/login.html', {'error_message': 'Your account has been disabled'})
         else:
@@ -227,7 +259,9 @@ def addPlant(request):
     if request.method=="POST":
         user = request.user
         plant_type = request.POST['plant_type']
-        plant=Plant(user=user,plant_type=plant_type,life=1)
+	latitude = request.POST['latitude']
+	longitude = request.POST['longitude']
+        plant=Plant(user=user,plant_type=plant_type,latitude=latitude,longitude=longitude,life=1)
 	plant.save()
         plants = Plant.objects.filter(user=user)
 	for p in plants:
@@ -241,7 +275,9 @@ def addPlant(request):
 		p.life=d
 		p.save()
 	plants = Plant.objects.filter(user=user)
-        return render(request,'sensor/itws.html',{'username':user.username,'plants':plants,'mapdata':location}) 
+	locate = []
+	locate = plant_location(plants,locate)
+        return render(request,'sensor/itws.html',{'username':user.username,'plants':plants,'mapdata':locate}) 
     plants = Plant.objects.filter(user=request.user)
     for p in plants:
 	d=soilMoisture.objects.filter(pid=p)
@@ -254,7 +290,52 @@ def addPlant(request):
 	p.life=d
 	p.save()
     plants = Plant.objects.filter(user=request.user)
-    return render(request,'sensor/addplant.html',{"form":form,'username':request.user.username,'plants':plants})
+    locate = []
+    locate = plant_location(plants,locate)
+    return render(request,'sensor/addplant.html',{"form":form,'username':request.user.username,'plants':plants,'mapdata':locate})
+
+@login_required(login_url='/sensor/login_user/')
+def modPlant(request):
+    form = ModPlant(request.POST or None)
+    if request.method=="POST":
+        user = request.user
+        pid = request.POST['pid']
+	lat = request.POST['latitude']
+	longi = request.POST['longitude']
+        plant=Plant.objects.get(id=pid)
+	plant.latitude=lat
+	plant.longitude=longi
+	plant.save()
+        plants = Plant.objects.filter(user=user)
+	for p in plants:
+		d=soilMoisture.objects.filter(pid=p)
+		if(len(d)>0):
+			d=int(d[len(d)-1].moisture)
+		else:
+			d=1
+		if(d!=0):
+			d=1
+		p.life=d
+		p.save()
+	plants = Plant.objects.filter(user=user)
+	locate=[]
+	locate = plant_location(plants,locate)
+        return render(request,'sensor/itws.html',{'username':user.username,'plants':plants,'mapdata':locate}) 
+    plants = Plant.objects.filter(user=request.user)
+    for p in plants:
+	d=soilMoisture.objects.filter(pid=p)
+	if(len(d)>0):
+	     d=int(d[len(d)-1].moisture)
+	else:
+		d=1
+	if(d!=0):
+		d=1
+	p.life=d
+	p.save()
+    plants = Plant.objects.filter(user=request.user)
+    locate = []
+    locate = plant_location(plants,locate)
+    return render(request,'sensor/modplant.html',{"form":form,'username':request.user.username,'plants':plants,'mapdata':locate})
 
 #View to show the first page after login to user.
 def home(request,pid):
@@ -278,7 +359,9 @@ def home(request,pid):
     plants = Plant.objects.filter(user=request.user)
     user=User.objects.filter(id=uid)
     username=user[0].username
-    return render(request,'sensor/itws.html',{'username':username,'plants':plants,'mapdata':location})
+    locate =[]
+    locate = plant_location(plants,locate)
+    return render(request,'sensor/itws.html',{'username':username,'plants':plants,'mapdata':locate})
 #A view just needed to send the data from database to display in index.html
 def gen(request):
     temp = Temperature.objects.all()
