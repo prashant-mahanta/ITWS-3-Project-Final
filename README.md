@@ -2,7 +2,7 @@
 The aim of the project to save plants by minimum use of water. 
 
 
-#1> Hardware components required 
+**Hardware components required**
 
  a) Aurduino
  
@@ -19,23 +19,21 @@ The aim of the project to save plants by minimum use of water.
 We need to collect data from the sensors and then plot real-time graph using the sensors data.
 
 
-#Software part:
+**Software part**:
 
- a) Django framework
+ > Django framework
  
- b) python
+ > python
  
- c) Javascript
+ > Javascript
  
- d) Html
+ > Html
  
- e) CSS
+ > CSS
  
- f) Json / rest framework
+ > Json / rest framework
  
- g) Chartjs (To plot graphs)
+ > Chartjs (To plot graphs)
  
-The is still under work will complete this readme after the completion of the project.
-
 website link:  <a href="http://itws3.pythonanywhere.com" target="_blank">itws3.pythonanywhere.com</a>
 
