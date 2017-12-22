@@ -1,7 +1,7 @@
 # Web GIS based IoT solutions for water management
 The aim of the project to save plants by minimum use of water. 
 
-
+##ABOUT
 **Hardware components required**
  > Aurduino
  
@@ -33,5 +33,16 @@ We need to collect data from the sensors and then plot real-time graph using the
  
  > Chartjs (To plot graphs)
  
-website link:  <a href="http://itws3.pythonanywhere.com" target="_blank">itws3.pythonanywhere.com</a>
+ ## USE
+ To run this project you need python, django and an additional framework (restframework).
+ - To install framework use:
+ > pip install djangorestframework
+ 
+ To run this project simply run the python file manage.py in the folder.
+ > python manage.py runserver
+ Then after that you can check the working of the website.
+ For guide: [here](https://docs.djangoproject.com/en/2.0/intro/install/)
+ 
+ 
+website link:  [Plant Nursury](itws3.pythonanywhere.com)
 
