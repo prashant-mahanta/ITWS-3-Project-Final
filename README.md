@@ -1,8 +1,9 @@
 # Web GIS based IoT solutions for water management
+[about](#about) [use](#use)
 The aim of the project to save plants by minimum use of water. 
 
-##ABOUT [about](#about)
-require "about"
+##ABOUT {#about}
+
 **Hardware components required**
  > Aurduino
  
@@ -34,7 +35,7 @@ We need to collect data from the sensors and then plot real-time graph using the
  
  > Chartjs (To plot graphs)
  
- ## USE [use](#use)
+ ## USE {#use}
  To run this project you need python, django and an additional framework (restframework).
  - To install framework use:
  > pip install djangorestframework
