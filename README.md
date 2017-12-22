@@ -42,7 +42,7 @@ We need to collect data from the sensors and then plot real-time graph using the
  
  To run this project simply run the python file manage.py in the folder.
  > python manage.py runserver
- Then after that you can check the working of the website.
+ 
  For guide: [here](https://docs.djangoproject.com/en/2.0/intro/install/)
  
  
