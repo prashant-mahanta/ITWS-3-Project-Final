@@ -2,6 +2,7 @@
 The aim of the project to save plants by minimum use of water. 
 
 ##ABOUT
+require "about"
 **Hardware components required**
  > Aurduino
  
@@ -34,6 +35,7 @@ We need to collect data from the sensors and then plot real-time graph using the
  > Chartjs (To plot graphs)
  
  ## USE
+ require "use"
  To run this project you need python, django and an additional framework (restframework).
  - To install framework use:
  > pip install djangorestframework
