@@ -39,7 +39,7 @@ We need to collect data from the sensors and then plot real-time graph using the
  - To install framework use:
  > pip install djangorestframework
  
- To run this project simply run the python file manage.py in the folder.
+ - To run this project simply run the python file manage.py in the folder.
  > python manage.py runserver
  
  For guide: [here](https://docs.djangoproject.com/en/2.0/intro/install/)
