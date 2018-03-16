@@ -1,5 +1,5 @@
 # Web GIS based IoT solutions for water management
-The aim of the project to save plants by minimum use of water. 
+The aim of the project to save plants by minimum use of water and provide automatic irrigation to plants.
 
 ## ABOUT 
 
