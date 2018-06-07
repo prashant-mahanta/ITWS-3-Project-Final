@@ -45,5 +45,7 @@ We need to collect data from the sensors and then plot real-time graph using the
  For guide: [here](https://docs.djangoproject.com/en/2.0/intro/install/)
  
  
-website link:  [Plant Nursury](itws3.pythonanywhere.com)
+website link:  [Plant Nursury](https://itws3.pythonanywhere.com)
+
+Demo Playlist: [Youtube Playlist](https://www.youtube.com/watch?v=eZYE-VqpkpY)
 
